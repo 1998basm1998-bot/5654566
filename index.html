@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Cache-Control" content="post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>إدارة العقارات</title>
+    <link rel="stylesheet" href="style.css?v=2.12">
+</head>
+<body>
+    <header>
+        <h1>نظام إدارة العقارات</h1>
+    </header>
+    <main>
+        <section id="add-property" class="tab-content active">
+            <h2>إضافة عقار جديد</h2>
+            <form id="property-form">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>رقم العقار</label>
+                        <input type="text" id="prop-number" required>
+                    </div>
+                    <div class="form-row">
+                        <label>مساحة العقار</label>
+                        <input type="text" id="prop-area" required>
+                    </div>
+                    <div class="form-row">
+                        <label>التاريخ</label>
+                        <input type="date" id="prop-date" required>
+                    </div>
+                    <div class="form-row">
+                        <label>اسم البائع</label>
+                        <input type="text" id="seller-name" required>
+                    </div>
+                    <div class="form-row">
+                        <label>رقم هاتف البائع</label>
+                        <input type="tel" id="seller-phone">
+                    </div>
+                    <div class="form-row">
+                        <label>اسم المشتري</label>
+                        <input type="text" id="buyer-name" required>
+                    </div>
+                    <div class="form-row">
+                        <label>رقم هاتف المشتري</label>
+                        <input type="tel" id="buyer-phone">
+                    </div>
+                    <div class="form-row">
+                        <label class="label-orange">مبلغ العقار</label>
+                        <input type="number" id="prop-amount" required min="0">
+                    </div>
+                    <div class="form-row">
+                        <label class="label-green">الواصل</label>
+                        <input type="number" id="amount-received" required min="0">
+                    </div>
+                    <div class="form-row">
+                        <label class="label-red">الباقي</label>
+                        <input type="number" id="amount-remaining" class="text-center text-red" readonly value="0">
+                    </div>
+                    <div class="form-row">
+                        <label>صور العقار</label>
+                        <button type="button" id="open-upload-modal" class="upload-trigger-btn">إضافة وعرض الصور <span id="image-count">(0)</span></button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-3d submit-btn">حفظ العقار</button>
+            </form>
+        </section>
+        
+        <section id="daily-transactions" class="tab-content">
+            <h2>المعاملات اليومية</h2>
+            
+            <div class="transaction-index">
+                <button type="button" class="index-btn active" data-filter="غير مكتملة">المعاملات الغير مكتملة</button>
+                <button type="button" class="index-btn" data-filter="جارية">المعاملات الجارية</button>
+                <button type="button" class="index-btn" data-filter="مكتملة">المعاملات المكتملة</button>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="search-transactions" placeholder="بحث باسم البائع أو رقم الهاتف...">
+            </div>
+
+            <div class="transactions-sections">
+                <div class="transaction-group">
+                    <div id="all-transactions-list" class="transactions-list">
+                        <!-- Transactions will be injected here -->
+                        <div class="empty-state">لا توجد معاملات حتى الآن.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="treasury" class="tab-content">
+            <div class="actions" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 1rem; position: sticky; top: 0; background: var(--bg-color); padding: 10px 0; z-index: 10;">
+                <button type="button" class="btn-3d btn-green" id="btn-deposit" style="flex: 1; max-width: 170px;">إضافة مبلغ</button>
+                <button type="button" class="btn-3d btn-red" id="btn-withdraw" style="flex: 1; max-width: 170px;">سحب مبلغ</button>
+            </div>
+            <h2>المحفظة</h2>
+            <div class="card treasury-card">
+                <h3>الرصيد الإجمالي</h3>
+                <p class="balance" id="total-balance">0 دينار</p>
+            </div>
+            
+            <div class="treasury-history">
+                <h3>سجل الحركات</h3>
+                <div id="treasury-history-list" class="transactions-list">
+                    <div class="empty-state">لا توجد حركات في المحفظة حتى الآن.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <nav class="tabs">
+        <button class="tab-btn active" data-target="add-property">إضافة عقار</button>
+        <button class="tab-btn" data-target="daily-transactions">المعاملات اليومية</button>
+        <button class="tab-btn" data-target="treasury">المحفظة</button>
+    </nav>
+
+    <!-- Modal for Treasury Transaction -->
+    <div id="treasury-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="treasury-modal-title">إضافة مبلغ</h2>
+            <form id="treasury-form">
+                <input type="hidden" id="treasury-type" value="deposit">
+                <div class="form-group">
+                    <label>المبلغ (دينار)</label>
+                    <input type="number" id="treasury-amount" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" id="treasury-date" required>
+                </div>
+                <div class="form-group">
+                    <label>السبب</label>
+                    <textarea id="treasury-reason" required rows="3"></textarea>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="submit" class="btn-3d btn-green">حفظ</button>
+                    <button type="button" id="cancel-treasury-btn" class="btn-3d btn-red">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Image Upload -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <h2>رفع صور العقار والمستمسكات</h2>
+            <div class="upload-area">
+                <input type="file" id="image-input" multiple accept="image/*">
+                <label for="image-input" class="btn-3d btn-green">اختر الصور</label>
+                <p style="margin-top: 1rem; color: #7f8c8d;">(يمكنك اختيار أكثر من صورة)</p>
+            </div>
+            <div id="image-preview" class="image-preview"></div>
+            <div class="modal-actions">
+                <button type="button" id="save-images-btn" class="btn-3d">حفظ الصور</button>
+                <button type="button" id="cancel-images-btn" class="btn-3d btn-red">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Transaction Details -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <h2>تفاصيل المعاملة</h2>
+            <div id="details-content" class="details-content"></div>
+            <div class="modal-actions">
+                <button type="button" id="close-details-btn" class="btn-3d btn-red">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
